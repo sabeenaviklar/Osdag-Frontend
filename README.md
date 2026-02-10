@@ -180,26 +180,7 @@ I implemented Option B (5 hardcoded cities) because it was faster to set up. The
 **Code organization:**
 I tried to keep things modular. Each React component has its own file, Django has proper separation between models/views/serializers, and I used meaningful variable names so the code is readable.
 
-## Running into Issues?
 
-**Backend won't start:**
-- Make sure virtual environment is activated
-- Check if port 8000 is already in use
-- Try: `python manage.py migrate` again
-
-**Frontend won't start:**
-- Delete node_modules and package-lock.json
-- Run `npm install` again
-- Make sure backend is running first
-
-**Can't see location data:**
-- Check browser console for errors
-- Verify backend is running on port 8000
-- Make sure you ran load_data.py
-
-**CORS errors:**
-- Check django-cors-headers is installed
-- Verify settings.py has correct CORS config
 
 ## Files Included
 
@@ -219,7 +200,7 @@ I recorded a demo showing:
 - Validation errors
 - All the features in action
 
-[YouTube link will be included in submission]
+Link i will share it in the submission form.
 
 ## Summary
 
