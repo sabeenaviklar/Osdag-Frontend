@@ -1,70 +1,232 @@
-# Getting Started with Create React App
+# OSDAG Bridge Design Module
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+ This is my submission for the OSDAG screening task. I've built a web-based bridge design interface that handles user inputs, validates data, and auto-calculates geometry parameters based on engineering constraints.
 
-## Available Scripts
+## What I Built
 
-In the project directory, you can run:
+This is a full-stack web application with a React frontend and Django backend. The main feature is a "Group Design" module where users can input bridge parameters and get real-time validation and calculations.
 
-### `npm start`
+The coolest part is probably the geometry popup - it automatically calculates the third value when you enter any two parameters, all while respecting the constraint equation: (Overall Width - Overhang) / Spacing = Number of Girders.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Tech Stack
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+**Backend:**
+- Django 4.2 (Python web framework)
+- Django REST Framework (for the API)
+- SQLite (database)
+- django-cors-headers (to connect frontend and backend)
 
-### `npm test`
+**Frontend:**
+- React 18
+- Axios (for API calls)
+- Plain CSS (no fancy frameworks, kept it simple)
+- Material-UI icons (just for a few icons)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Features I Implemented
 
-### `npm run build`
+### 1. Structure Type Selection
+Pretty straightforward - you can choose between "Highway" and "Other". If you select "Other", all the input fields get disabled and you see a warning message saying that other structures aren't included yet.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 2. Project Location (Two Ways)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+I implemented both modes they asked for:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+**Mode 1 - Location Selection:**
+- Pick a state from the dropdown
+- Then pick a district
+- Location data (wind speed, seismic zone, temperatures) shows up automatically in green
+- I hardcoded 5 major cities: Mumbai, Delhi, Chennai, Bangalore, and Kolkata
 
-### `npm run eject`
+**Mode 2 - Custom Parameters:**
+- Click "Open Spreadsheet" button
+- Enter your own values in a popup
+- Zone factor updates automatically when you select a seismic zone
+- Same data appears in green after you save
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 3. Geometric Inputs with Validation
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+I added validation for:
+- **Span**: Must be between 5-100 meters
+- **Carriageway Width**: Must be between 3-50 meters  
+- **Skew Angle**: Shows a warning if you go above 20° (IRC 24 requirement)
+- **Footpath**: Three options - Single-sided, Both, or None
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 4. The Geometry Calculation Popup
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+This was the trickiest part. When you click "Modify Additional Geometry":
+- A popup opens showing the constraint formula
+- You can enter any two values (spacing, number of girders, or overhang)
+- When you blur out of a field, it calculates the third value automatically
+- Everything has to satisfy: Overall Width = Carriageway Width + 5
+- Plus the main equation: (Overall Width - Overhang) / Spacing = No. of Girders
+- Shows clear error messages if your values don't work
 
-## Learn More
+### 5. Material Selection
+Simple dropdowns for:
+- Girder Steel (E250, E350, E450)
+- Cross Bracing Steel (same options)
+- Deck Concrete (M25 through M60)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## How to Run This
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Prerequisites
+You'll need:
+- Python 3.10 or newer
+- Node.js 16 or newer
+- About 10 minutes to set everything up
 
-### Code Splitting
+### Backend Setup
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```bash
+# Create a folder and go into it
+mkdir osdag-bridge-project
+cd osdag-bridge-project
+mkdir backend
+cd backend
 
-### Analyzing the Bundle Size
+# How to Set up Python virtual environment?
+python3 -m venv venv
+source venv/bin/activatee
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+# Installing Python packages which is required in the project
+pip install Django==4.2.0
+pip install djangorestframework==3.14.0
+pip install django-cors-headers==4.0.0
 
-### Making a Progressive Web App
+# Create Django project
+django-admin startproject bridge_backend .
+python manage.py startapp bridge_module
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+# Copy all the backend files I created to the right places
+# (models.py, views.py, serializers.py, settings.py, urls.py)
 
-### Advanced Configuration
+# Set up database
+python manage.py makemigrations
+python manage.py migrate
+python manage.py shell < load_data.py
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+# Start the server
+python manage.py runserver 8000
+```
 
-### Deployment
+Keep this terminal running!
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### ========= Frontend Setup ==============
 
-### `npm run build` fails to minify
+Open a new terminal:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```bash
+# Go to project root
+cd osdag-bridge-project
+
+# Create React app
+npx create-react-app frontend
+cd frontend
+
+# Install dependencies
+npm install axios
+npm install @mui/material @emotion/react @emotion/styled
+npm install @mui/icons-material
+
+
+# Start the app
+npm start
+```
+
+The app should open automatically run at http://localhost:3000
+
+
+## API Endpoints
+
+I created these REST endpoints:
+
+- `GET /api/states/` - List all states
+- `GET /api/districts/` - List all districts
+- `GET /api/districts/?state_id=1` - Filter by state
+- `GET /api/districts/1/location_data/` - Get location details
+- `POST /api/calculate-geometry/` - Calculate geometry values
+- `GET /api/material-options/` - Get steel/concrete grades
+
+## The Challenges which I Faced during this project are
+
+1. Geometry Auto-Calculation**
+The hardest part was getting the geometry calculations right. I had to think through all the edge cases - what if someone enters spacing that's bigger than the bridge width? What if the numbers don't divide evenly? I ended up creating a Django serializer that handles all the math and validation on the backend, then sends back the calculated values.
+
+2. State Management**
+Managing state in React got complicated with so many interdependent fields. I used multiple useEffect hooks to handle the cascade - when state changes, fetch districts; when district changes, fetch location data; when structure type changes, disable/enable fields. Took some debugging to get the timing right.
+
+3. CORS Issues**
+Initially couldn't get the frontend to talk to the backend. Had to install and configure django-cors-headers properly. Also made sure the API calls were going to the right URL (localhost:8000).
+
+4. Validation UX**
+I wanted validation to feel smooth, not annoying. So I validate on blur instead of on every keystroke, clear errors as soon as the user fixes them, and show specific messages like "Outside the software range" instead of generic errors.
+
+## What I'd Improve
+
+I had more time(because i started a little late), I would:
+- Implement Option A with the full database (all districts from the Excel tables)
+- Add form submission to actually save designs to the database
+- Add a designs list page to view previous calculations
+- Make the UI responsive for mobile
+- Add unit tests for the geometry calculations
+- Maybe add a visualization of the bridge based on the inputs
+
+
+
+
+**Option B vs Option A:**
+I implemented Option B (5 hardcoded cities) because it was faster to set up. The code is structured so upgrading to Option A would just mean replacing the load_data.py script - no frontend changes needed.
+
+**Code organization:**
+I tried to keep things modular. Each React component has its own file, Django has proper separation between models/views/serializers, and I used meaningful variable names so the code is readable.
+
+## Running into Issues?
+
+**Backend won't start:**
+- Make sure virtual environment is activated
+- Check if port 8000 is already in use
+- Try: `python manage.py migrate` again
+
+**Frontend won't start:**
+- Delete node_modules and package-lock.json
+- Run `npm install` again
+- Make sure backend is running first
+
+**Can't see location data:**
+- Check browser console for errors
+- Verify backend is running on port 8000
+- Make sure you ran load_data.py
+
+**CORS errors:**
+- Check django-cors-headers is installed
+- Verify settings.py has correct CORS config
+
+## Files Included
+
+All the code files are in this submission:
+- Complete Django backend (models, views, serializers, settings)
+- Complete React frontend (all components with CSS)
+- Data loading script
+- This README
+- Setup instructions
+
+## Video Demo
+
+I recorded a demo showing:
+- UI overview
+- Both location modes working
+- Geometry auto-calculation
+- Validation errors
+- All the features in action
+
+[YouTube link will be included in submission]
+
+## Summary
+
+This was a really a fun project to build! I learned a lot about constraint-based calculations and building intuitive UIs for engineering applications. The geometry popup was definitely the most interesting part, and also making sure the math works correctly while also handling all the edge cases took some careful thinking. (Building the backend was a really a hard apart.)
+
+Thanks for reviewing my submission!
+
+
+**===Built by:====** Sabeena 
+**For:** OSDAG Screening Task - Bridge Module
